@@ -206,7 +206,30 @@
     border: 1px dashed var(--border-strong); border-radius: var(--radius); padding: 22px;
   }
 
+  .filter-row{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom: 22px; }
+  .filter-chip{
+    padding: 8px 18px; border-radius: 30px; border: 1px solid var(--border-strong);
+    background: transparent; color: var(--text-muted); font-size: 0.86rem; transition: all .2s;
+  }
+  .filter-chip:hover{ border-color: var(--azure-bright); color: var(--text); }
+  .filter-chip.active{ background: var(--azure); border-color: var(--azure); color: var(--text); }
+
   .media-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .media-item.hidden{ display:none; }
+  .media-item.photo-thumb, .media-item.graphic-thumb{ cursor: zoom-in; }
+
+  .lightbox{
+    position: fixed; inset:0; background: rgba(5,7,11,0.92); z-index: 200;
+    display:none; align-items:center; justify-content:center; padding: 40px;
+    backdrop-filter: blur(6px);
+  }
+  .lightbox.open{ display:flex; }
+  .lightbox img{ max-width: 100%; max-height: 88vh; border-radius: var(--radius); border: 1px solid var(--border-strong); }
+  .lightbox-close{
+    position:absolute; top: 24px; right: 28px; width:42px; height:42px; border-radius:50%;
+    background: var(--surface); border: 1px solid var(--border-strong); color: var(--text);
+    font-size: 1.3rem; display:flex; align-items:center; justify-content:center;
+  }
   .media-item{
     position: relative; border-radius: var(--radius); overflow:hidden; border: 1px solid var(--border);
     aspect-ratio: 4/5; background: var(--bg-alt);
@@ -347,31 +370,33 @@
           <span class="bracket-tr"></span><span class="bracket-bl"></span>
           <div class="cat-index">01 — STILLS</div>
           <h3>Photography</h3>
-          <div class="cat-count">1 piece</div>
+          <div class="cat-count">64 pieces</div>
         </button>
         <button class="cat-card bracket" data-cat="videography" aria-expanded="false">
           <span class="cat-glow"></span>
           <span class="bracket-tr"></span><span class="bracket-bl"></span>
           <div class="cat-index">02 — MOTION</div>
           <h3>Videography</h3>
-          <div class="cat-count">9 pieces</div>
+          <div class="cat-count">20 pieces</div>
         </button>
         <button class="cat-card bracket" data-cat="graphics" aria-expanded="false">
           <span class="cat-glow"></span>
           <span class="bracket-tr"></span><span class="bracket-bl"></span>
           <div class="cat-index">03 — DESIGN</div>
           <h3>Graphics Design</h3>
-          <div class="cat-count">Coming soon</div>
+          <div class="cat-count">16 pieces</div>
         </button>
       </div>
 
       <div class="cat-panel" id="panel-photography" data-panel="photography">
-        <div class="media-grid">
-          <div class="media-item bracket">
-            <span class="bracket-tr"></span><span class="bracket-bl"></span>
-            <img src="photos/photo1.jpg" alt="Editorial street photography, selective colour" loading="lazy">
-          </div>
+        <div class="filter-row" id="photoFilters">
+          <button class="filter-chip active" data-sub="all">All</button>
+          <button class="filter-chip" data-sub="editorial">Editorial</button>
+          <button class="filter-chip" data-sub="portraits">Portraits</button>
+          <button class="filter-chip" data-sub="street">Street B&amp;W</button>
+          <button class="filter-chip" data-sub="events">Events</button>
         </div>
+        <div class="media-grid" id="photoGrid"></div>
       </div>
 
       <div class="cat-panel" id="panel-videography" data-panel="videography">
@@ -379,9 +404,7 @@
       </div>
 
       <div class="cat-panel" id="panel-graphics" data-panel="graphics">
-        <div class="media-grid">
-          <div class="media-item empty-state">Graphic design portfolio is being curated — check back soon.</div>
-        </div>
+        <div class="media-grid" id="graphicsGrid"></div>
       </div>
 
       <div class="panel-hint" id="panelHint">Select Photography, Videography, or Graphics Design above to open the gallery.</div>
@@ -497,9 +520,74 @@
     burger.setAttribute('aria-expanded', 'false');
   }));
 
+  const PHOTO_DATA = {
+    editorial: ["new_editorial_01.jpg","photo_1733696899304.jpg","photo_1733697408261.jpg","photo_1733697409468.jpg","photo_1733697411198.jpg","photo_1733697537104.jpg","photo_1733697647875.jpg","photo_1733697650804.jpg","photo_1733697786412.jpg","photo_1733697874304.jpg","photo_1733697880970.jpg","photo_1733698205039.jpg","photo_1733698302438.jpg"],
+    portraits: ["dsc_3734.jpg","dsc_3743.jpg","img_6373.jpg","img_9296_01.jpg","img_9315_01.jpg","img_9349_01.jpg","img_9355_03.jpg","img_9364_02.jpg","photo_1733503882209.jpg","photo_1733503886060.jpg","photo_1733503889043.jpg","photo_1733504044575.jpg","photo_1733504045557.jpg","photo_1733504048541.jpg"],
+    street: ["dsc_0767.jpg","dsc_0805.jpg","dsc_0821.jpg","dsc_0838.jpg","dsc_0894.jpg","dsc_0904.jpg","dsc_0932.jpg","dsc_0975.jpg","dsc_1063.jpg","dsc_1131.jpg","img_7267.jpg","img_7274.jpg","img_7326.jpg","img_7500.jpg","img_7526.jpg","img_7739.jpg","img_7751.jpg","img_7768.jpg","photo_1733987662583.jpg","photo_1733987753998.jpg","photo_1733987970552.jpg","photo_1733988105587.jpg","photo_1733988208779.jpg","photo_1733988209779.jpg"],
+    events: ["kt6a2367.jpg","kt6a2391.jpg","kt6a2458.jpg","kt6a2583.jpg","kt6a2592.jpg","kt6a2611.jpg","kt6a2614.jpg","kt6a6279.jpg","kt6a6288.jpg","kt6a6412.jpg","kt6a6429.jpg","photo_1733248155647.jpg","photo_1733503768680.jpg"],
+  };
+  const GRAPHICS_DATA = ["beige_and_black_modern_beauty_make_up_ar.jpg","beige_minimalist_eid_mubarak_greeting_in.jpg","black_and_white_modern_photography_flyer.jpg","black_thriller_move_poster_png.jpg","brown_minimalist_nail_salon_flyer_png.jpg","doc_recruiter_training_guide.jpg","doc_strategic_workforce_dev.jpg","ewaola_26_png.jpg","grunge_brush_movie_poster_png.jpg","hallelujah_png.jpg","my_home_muststand_png.jpg","peach_illustrative_nail_salon_a4_png.jpg","red_and_black_action_movie_poster_png.jpg","red_bold_vintage_action_movie_poster_png.jpg","red_modern_science_fiction_book_cover_pn.jpg","white_simple_dreamy_movie_poster_png.jpg"];
+
+  // Lightbox
+  const lightbox = document.createElement('div');
+  lightbox.className = 'lightbox';
+  lightbox.innerHTML = `<button class="lightbox-close" aria-label="Close">&times;</button><img src="" alt="">`;
+  document.body.appendChild(lightbox);
+  const lightboxImg = lightbox.querySelector('img');
+  function openLightbox(src, alt){
+    lightboxImg.src = src;
+    lightboxImg.alt = alt || '';
+    lightbox.classList.add('open');
+  }
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox || e.target.classList.contains('lightbox-close')) lightbox.classList.remove('open');
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') lightbox.classList.remove('open'); });
+
+  // Build photography grid (all subcategories, filterable)
+  const photoGrid = document.getElementById('photoGrid');
+  Object.entries(PHOTO_DATA).forEach(([sub, files]) => {
+    files.forEach(file => {
+      const item = document.createElement('div');
+      item.className = 'media-item bracket photo-thumb';
+      item.dataset.sub = sub;
+      item.innerHTML = `
+        <span class="bracket-tr"></span><span class="bracket-bl"></span>
+        <img src="photos/${sub}/${file}" alt="${sub} photography by Vision" loading="lazy">
+      `;
+      item.addEventListener('click', () => openLightbox(`photos/${sub}/${file}`, `${sub} photography by Vision`));
+      photoGrid.appendChild(item);
+    });
+  });
+
+  const filterChips = document.querySelectorAll('.filter-chip');
+  filterChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      filterChips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      const sub = chip.dataset.sub;
+      photoGrid.querySelectorAll('.media-item').forEach(item => {
+        item.classList.toggle('hidden', sub !== 'all' && item.dataset.sub !== sub);
+      });
+    });
+  });
+
+  // Build graphics design grid
+  const graphicsGrid = document.getElementById('graphicsGrid');
+  GRAPHICS_DATA.forEach(file => {
+    const item = document.createElement('div');
+    item.className = 'media-item bracket graphic-thumb';
+    item.innerHTML = `
+      <span class="bracket-tr"></span><span class="bracket-bl"></span>
+      <img src="graphics/${file}" alt="Graphic design work by Vision" loading="lazy">
+    `;
+    item.addEventListener('click', () => openLightbox(`graphics/${file}`, 'Graphic design work by Vision'));
+    graphicsGrid.appendChild(item);
+  });
+
   // Build video grid
   const videoGrid = document.getElementById('videoGrid');
-  const videoCount = 9;
+  const videoCount = 20;
   for (let i = 1; i <= videoCount; i++){
     const item = document.createElement('div');
     item.className = 'media-item bracket';
