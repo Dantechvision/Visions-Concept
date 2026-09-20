@@ -259,7 +259,7 @@
   .filter-chip:hover{ border-color: var(--azure-bright); color: var(--text); }
   .filter-chip.active{ background: var(--azure); border-color: var(--azure); color: var(--text); }
 
-  .media-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .media-grid{ column-count: 3; column-gap: 14px; }
   .media-item.hidden{ display:none; }
   .media-item.photo-thumb, .media-item.graphic-thumb{ cursor: zoom-in; }
 
@@ -277,10 +277,10 @@
   }
   .media-item{
     position: relative; border-radius: var(--radius); overflow:hidden; border: 1px solid var(--border);
-    aspect-ratio: 4/5; background: var(--bg-alt);
+    background: var(--bg-alt); break-inside: avoid; margin-bottom: 14px; display: block;
   }
-  .media-item img, .media-item video{ width:100%; height:100%; object-fit: cover; }
-  .media-item.empty-state{ grid-column: 1 / -1; aspect-ratio: auto; padding: 50px 20px; text-align:center; color: var(--text-dim); border-style: dashed; }
+  .media-item img, .media-item video{ width:100%; height:auto; display:block; }
+  .media-item.empty-state{ padding: 50px 20px; text-align:center; color: var(--text-dim); border-style: dashed; }
   .play-btn{
     position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
     background: rgba(9,12,18,0.28); transition: background .2s;
@@ -345,13 +345,13 @@
     .nav-links, .nav-cta{ display:none; }
     .burger{ display:flex; }
     .cat-grid, .services-grid, .testi-grid{ grid-template-columns: 1fr; }
-    .media-grid{ grid-template-columns: repeat(2,1fr); }
+    .media-grid{ column-count: 2; }
     .about-grid{ grid-template-columns: 1fr; }
     .hero-meta{ gap: 30px; }
     .contact-box{ flex-direction:column; align-items:flex-start; }
   }
   @media (max-width: 480px){
-    .media-grid{ grid-template-columns: 1fr; }
+    .media-grid{ column-count: 1; }
   }
 
   .mobile-menu{
@@ -442,14 +442,14 @@
           <span class="bracket-tr"></span><span class="bracket-bl"></span>
           <div class="cat-index">01 — STILLS</div>
           <h3>Photography</h3>
-          <div class="cat-count">64 pieces</div>
+          <div class="cat-count">114 pieces</div>
         </button>
         <button class="cat-card bracket" data-cat="videography" aria-expanded="false">
           <span class="cat-glow"></span>
           <span class="bracket-tr"></span><span class="bracket-bl"></span>
           <div class="cat-index">02 — MOTION</div>
           <h3>Videography</h3>
-          <div class="cat-count">20 pieces</div>
+          <div class="cat-count">21 pieces</div>
         </button>
         <button class="cat-card bracket" data-cat="graphics" aria-expanded="false">
           <span class="cat-glow"></span>
@@ -467,6 +467,8 @@
           <button class="filter-chip" data-sub="portraits">Portraits</button>
           <button class="filter-chip" data-sub="street">Street B&amp;W</button>
           <button class="filter-chip" data-sub="events">Events</button>
+          <button class="filter-chip" data-sub="corporate">Corporate</button>
+          <button class="filter-chip" data-sub="studio">Studio</button>
         </div>
         <div class="media-grid" id="photoGrid"></div>
       </div>
@@ -593,10 +595,12 @@
   }));
 
   const PHOTO_DATA = {
-    editorial: ["new_editorial_01.jpg","photo_1733696899304.jpg","photo_1733697408261.jpg","photo_1733697409468.jpg","photo_1733697411198.jpg","photo_1733697537104.jpg","photo_1733697647875.jpg","photo_1733697650804.jpg","photo_1733697786412.jpg","photo_1733697874304.jpg","photo_1733697880970.jpg","photo_1733698205039.jpg","photo_1733698302438.jpg"],
-    portraits: ["dsc_3734.jpg","dsc_3743.jpg","img_6373.jpg","img_9296_01.jpg","img_9315_01.jpg","img_9349_01.jpg","img_9355_03.jpg","img_9364_02.jpg","photo_1733503882209.jpg","photo_1733503886060.jpg","photo_1733503889043.jpg","photo_1733504044575.jpg","photo_1733504045557.jpg","photo_1733504048541.jpg"],
-    street: ["dsc_0767.jpg","dsc_0805.jpg","dsc_0821.jpg","dsc_0838.jpg","dsc_0894.jpg","dsc_0904.jpg","dsc_0932.jpg","dsc_0975.jpg","dsc_1063.jpg","dsc_1131.jpg","img_7267.jpg","img_7274.jpg","img_7326.jpg","img_7500.jpg","img_7526.jpg","img_7739.jpg","img_7751.jpg","img_7768.jpg","photo_1733987662583.jpg","photo_1733987753998.jpg","photo_1733987970552.jpg","photo_1733988105587.jpg","photo_1733988208779.jpg","photo_1733988209779.jpg"],
+    editorial: ["20240219_220631.jpg","20240219_221023.jpg","20240219_221101.jpg","20240219_221136.jpg","IMG_6516.jpg","IMG_9223-01.jpg","IMG_9236-01.jpg","new_editorial_01.jpg","photo_1733696899304.jpg","photo_1733697408261.jpg","photo_1733697409468.jpg","photo_1733697411198.jpg","photo_1733697537104.jpg","photo_1733697647875.jpg","photo_1733697650804.jpg","photo_1733697786412.jpg","photo_1733697874304.jpg","photo_1733697880970.jpg","photo_1733698205039.jpg","photo_1733698302438.jpg"],
+    portraits: ["20240214_123643.jpg","20240214_123943.jpg","20240214_131213.jpg","dsc_3734.jpg","dsc_3743.jpg","img_6373.jpg","img_9296_01.jpg","img_9315_01.jpg","img_9349_01.jpg","img_9355_03.jpg","img_9364_02.jpg","photo_1733503882209.jpg","photo_1733503886060.jpg","photo_1733503889043.jpg","photo_1733504044575.jpg","photo_1733504045557.jpg","photo_1733504048541.jpg"],
+    street: ["DSC_3613.jpg","DSC_3627.jpg","dsc_0767.jpg","dsc_0805.jpg","dsc_0821.jpg","dsc_0838.jpg","dsc_0894.jpg","dsc_0904.jpg","dsc_0932.jpg","dsc_0975.jpg","dsc_1063.jpg","dsc_1131.jpg","img_7267.jpg","img_7274.jpg","img_7326.jpg","img_7500.jpg","img_7526.jpg","img_7739.jpg","img_7751.jpg","img_7768.jpg","photo_1733987662583.jpg","photo_1733987753998.jpg","photo_1733987970552.jpg","photo_1733988105587.jpg","photo_1733988208779.jpg","photo_1733988209779.jpg"],
     events: ["kt6a2367.jpg","kt6a2391.jpg","kt6a2458.jpg","kt6a2583.jpg","kt6a2592.jpg","kt6a2611.jpg","kt6a2614.jpg","kt6a6279.jpg","kt6a6288.jpg","kt6a6412.jpg","kt6a6429.jpg","photo_1733248155647.jpg","photo_1733503768680.jpg"],
+    corporate: ["DSC_0748.jpg","DSC_0766.jpg","DSC_0776.jpg","DSC_0796.jpg","DSC_0832_2_.jpg","DSC_0836.jpg","Photo_1733242727187.jpg","Photo_1733247335842.jpg","Photo_1733247531368.jpg","Photo_1733247535030.jpg","Photo_1733247922525.jpg","Photo_1733248399102.jpg","Photo_1733248406439.jpg","Photo_1733248521685.jpg"],
+    studio: ["IMG_8441_1_.jpg","IMG_8465.jpg","IMG_8469.jpg","IMG_8477.jpg","IMG_8482.jpg","IMG_8486.jpg","IMG_8512.jpg","IMG_8527.jpg","IMG_8540.jpg","IMG_8547.jpg","IMG_8551.jpg","IMG_8554.jpg","IMG_8557.jpg","IMG_8567.jpg","IMG_8584.jpg","IMG_8587.jpg","IMG_8606.jpg","IMG_8667.jpg","IMG_8695.jpg","IMG_8739.jpg","IMG_8744.jpg","IMG_8759.jpg","IMG_8764.jpg","IMG_8765.jpg"],
   };
   const GRAPHICS_DATA = ["beige_and_black_modern_beauty_make_up_ar.jpg","beige_minimalist_eid_mubarak_greeting_in.jpg","black_and_white_modern_photography_flyer.jpg","black_thriller_move_poster_png.jpg","brown_minimalist_nail_salon_flyer_png.jpg","doc_recruiter_training_guide.jpg","doc_strategic_workforce_dev.jpg","ewaola_26_png.jpg","grunge_brush_movie_poster_png.jpg","hallelujah_png.jpg","my_home_muststand_png.jpg","peach_illustrative_nail_salon_a4_png.jpg","red_and_black_action_movie_poster_png.jpg","red_bold_vintage_action_movie_poster_png.jpg","red_modern_science_fiction_book_cover_pn.jpg","white_simple_dreamy_movie_poster_png.jpg"];
 
@@ -659,7 +663,7 @@
 
   // Build video grid
   const videoGrid = document.getElementById('videoGrid');
-  const videoCount = 20;
+  const videoCount = 21;
   for (let i = 1; i <= videoCount; i++){
     const item = document.createElement('div');
     item.className = 'media-item bracket';
