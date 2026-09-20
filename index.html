@@ -369,7 +369,7 @@
         <div class="media-grid">
           <div class="media-item bracket">
             <span class="bracket-tr"></span><span class="bracket-bl"></span>
-            <img src="assets/photos/photo1.jpg" alt="Editorial street photography, selective colour" loading="lazy">
+            <img src="photos/photo1.jpg" alt="Editorial street photography, selective colour" loading="lazy">
           </div>
         </div>
       </div>
@@ -392,7 +392,7 @@
     <div class="wrap about-grid">
       <div class="about-photo bracket">
         <span class="bracket-tr"></span><span class="bracket-bl"></span>
-        <img src="assets/photos/about.jpg" alt="Daniel Adesanya, Vision">
+        <img src="photos/about.jpg" alt="Daniel Adesanya, Vision">
       </div>
       <div class="about-text">
         <div class="section-tag">About</div>
@@ -505,7 +505,7 @@
     item.className = 'media-item bracket';
     item.innerHTML = `
       <span class="bracket-tr"></span><span class="bracket-bl"></span>
-      <img src="assets/posters/vid${i}.jpg" alt="Videography sample ${i}" loading="lazy">
+      <img src="posters/vid${i}.jpg" alt="Videography sample ${i}" loading="lazy">
       <button class="play-btn" aria-label="Play video ${i}" data-index="${i}"></button>
     `;
     videoGrid.appendChild(item);
@@ -516,7 +516,7 @@
     const idx = btn.dataset.index;
     const item = btn.closest('.media-item');
     const video = document.createElement('video');
-    video.src = `assets/videos/vid${idx}.mp4`;
+    video.src = `videos/vid${idx}.mp4`;
     video.controls = true;
     video.autoplay = true;
     video.playsInline = true;
